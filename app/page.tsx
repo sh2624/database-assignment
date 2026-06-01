@@ -2,6 +2,8 @@ import prisma from "../lib/prisma";
 import EnrollButton from "./EnrollButton";
 import { Toaster } from "react-hot-toast";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // 1. 전체 과목 목록 가져오기
   const courses = await prisma.course.findMany({

@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "../../lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function enrollCourse(userId: number, courseId: number) {
   return await prisma.$transaction(async (tx) => {
@@ -53,6 +54,8 @@ export async function enrollCourse(userId: number, courseId: number) {
         enrolledCount: { increment: 1 },
       },
     });
+
+    revalidatePath("/");
 
     return { success: true, message: `${course.title} 과목 신청 성공!` };
   });
