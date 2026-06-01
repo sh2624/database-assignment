@@ -10,9 +10,9 @@ export default async function Home() {
     orderBy: { id: "asc" },
   });
 
-  // DB에 있는 첫 번째 학생 가져오기
-  const firstStudent = await prisma.user.findFirst();
-  if (!firstStudent) {
+  // DB에 있는 랜덤 학생 가져오기 (트랜잭션 테스트용)
+  const allStudents = await prisma.user.findMany();
+  if (allStudents.length === 0) {
     return (
       <div className="p-8 text-center text-red-500 font-bold">
         데이터베이스에 학생 데이터가 없습니다.
@@ -20,7 +20,10 @@ export default async function Home() {
     );
   }
 
-  const currentStudentId = firstStudent.id;
+  // 랜덤 학생 선택 로직
+  const randomIndex = Math.floor(Math.random() * allStudents.length);
+  const currentStudent = allStudents[randomIndex];
+  const currentStudentId = currentStudent.id;
 
   // 2. JOIN 쿼리 (내 수강 내역)
   const myEnrollments = await prisma.$queryRaw<any[]>`
@@ -47,6 +50,13 @@ export default async function Home() {
           <h1 className="text-3xl font-extrabold text-center mb-8 text-blue-900">
             🎓 데이터베이스 과제 - 모의 수강신청 시스템
           </h1>
+
+          <div className="text-center mb-8">
+            <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-bold shadow-sm">
+              🧑‍🎓 현재 접속자: {currentStudent.name} (ID: {currentStudent.id})
+            </span>
+          </div>
+
           <div className="grid gap-4">
             {courses.map((course) => {
               const isFull = course.enrolledCount >= course.capacity;
