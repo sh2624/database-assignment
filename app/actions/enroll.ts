@@ -21,7 +21,7 @@ export async function enrollCourse(userId: number, courseId: number) {
 
     // 1. 정원 초과 검증
     if (course.enrolled_count >= course.capacity) {
-      throw new Error("수강 정원이 모두 마감되었습니다.");
+      return { success: false, message: "수강 정원이 모두 마감되었습니다." };
     }
 
     // 2. 중복 신청 여부 검증
@@ -35,7 +35,7 @@ export async function enrollCourse(userId: number, courseId: number) {
     });
 
     if (existingEnrollment && existingEnrollment.status === "ENROLLED") {
-      throw new Error("이미 수강 신청 완료된 과목입니다.");
+      return { success: false, message: "이미 수강 신청 완료된 과목입니다." };
     }
 
     // 3. 수강 신청 내역 등록
