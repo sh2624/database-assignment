@@ -53,7 +53,8 @@ export default async function Home() {
 
           <div className="text-center mb-8">
             <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-bold shadow-sm">
-              🧑‍🎓 현재 접속자: {currentStudent.name} (ID: {currentStudent.id})
+              🧑‍🎓 현재 접속자: {currentStudent.name} ({currentStudent.department}
+              /{currentStudent.studentNumber})
             </span>
           </div>
 

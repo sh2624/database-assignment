@@ -1,6 +1,7 @@
 # 🎓 데이터베이스 과제 - 모의 수강신청 시스템
 
 - PostgreSQL을 활용한 웹 서비스 개발 프로젝트
+- 배포 주소: https://db-sugang-lsh.vercel.app/
 
 ## 🛠 Tech Stack
 
