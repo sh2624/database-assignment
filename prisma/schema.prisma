@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 수강신청 상태 Enum
+enum EnrollmentStatus {
+  ENROLLED
+  CANCELED
+}
+
+// 1. 학생 테이블
+model User {
+  id            Int          @id @default(autoincrement())
+  studentNumber String       @unique @map("student_number")
+  name          String
+  department    String?
+  createdAt     DateTime     @default(now()) @map("created_at")
+  enrollments   Enrollment[]
+
+  @@map("users")
+}
+
+// 2. 강좌 테이블
+model Course {
+  id            Int          @id @default(autoincrement())
+  code          String       @unique
+  title         String
+  professor     String?
+  credits       Int
+  capacity      Int
+  enrolledCount Int          @default(0) @map("enrolled_count")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  enrollments   Enrollment[]
+
+  @@map("courses")
+}
+
+// 3. 수강신청 내역 테이블
+model Enrollment {
+  id        Int              @id @default(autoincrement())
+  userId    Int              @map("user_id")
+  courseId  Int              @map("course_id")
+  status    EnrollmentStatus @default(ENROLLED)
+  appliedAt DateTime         @default(now()) @map("applied_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  // 관계 설정 (외래키 매핑)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId], name: "unique_active_enrollment") // 현재 활성화된 신청 기준 중복 방지
+  @@map("enrollments")
+}
