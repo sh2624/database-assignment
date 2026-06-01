@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function enrollCourse(userId: number, courseId: number) {
   return await prisma.$transaction(async (tx) => {
-    // 특정 과목의 행을 선점
+    // 동시성 제어 - 특정 과목의 행을 선점
     const courses = await tx.$queryRaw<any[]>`
       SELECT id, title, capacity, enrolled_count 
       FROM courses 
@@ -14,7 +14,7 @@ export async function enrollCourse(userId: number, courseId: number) {
     `;
 
     if (!courses || courses.length === 0) {
-      throw new Error("존재하지 않는 과목입니다.");
+      return { success: false, message: "존재하지 않는 과목입니다." };
     }
 
     const course = courses[0];
@@ -34,11 +34,10 @@ export async function enrollCourse(userId: number, courseId: number) {
       },
     });
 
-    if (existingEnrollment && existingEnrollment.status === "ENROLLED") {
-      return { success: false, message: "이미 수강 신청 완료된 과목입니다." };
+    if (existingEnrollment) {
+      return { success: false, message: "이미 수강신청 완료된 과목입니다." };
     }
 
-    // 3. 수강 신청 내역 등록
     await tx.enrollment.create({
       data: {
         userId: userId,
@@ -47,7 +46,7 @@ export async function enrollCourse(userId: number, courseId: number) {
       },
     });
 
-    // 4. 현재 신청 인원 카운트 증가
+    // 3. 현재 신청 인원 카운트 증가
     await tx.course.update({
       where: { id: courseId },
       data: {
