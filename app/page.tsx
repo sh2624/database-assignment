@@ -43,7 +43,7 @@ export default async function Home() {
         {/* 상단: 수강신청 목록 구역 */}
         <section>
           <h1 className="text-3xl font-extrabold text-center mb-8 text-blue-900">
-            🎓 데이터베이스 과제 - 모의 수강신청
+            🎓 데이터베이스 과제 - 모의 수강신청 시스템
           </h1>
           <div className="grid gap-4">
             {courses.map((course) => {
